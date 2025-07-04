@@ -1,12 +1,15 @@
+import os
+
 import yt_dlp
 
 
 def download_audio_flac(url, path="downloads"):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': f'{path}/%(title)s.%(ext)s',
+        'outtmpl': os.path.join(path, '%(title)s.%(ext)s'),
         'quiet': True,
-        'ffmpeg_location': r"C:\ffmpeg\bin",
+        'ignoreerrors': True,
+        'ffmpeg_location': r'C:\ffmpeg\bin',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'flac',
@@ -14,7 +17,10 @@ def download_audio_flac(url, path="downloads"):
         }],
     }
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-        print(f"🎧 Скачано как FLAC: {url}")
-
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+            print(f"🎧 Скачано как FLAC: {url}")
+    except Exception as e:
+        print(f"❌ Пропущено (ошибка скачивания): {url}")
+        print(f"   Причина: {str(e)}")
